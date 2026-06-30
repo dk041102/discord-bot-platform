@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-check:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [api-gateway, discord-service, ai-service]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        working-directory: services/${{ matrix.service }}
+        run: npm install
+      - name: Syntax check (import all source files)
+        working-directory: services/${{ matrix.service }}
+        run: node --check src/server.js
+
+  frontend-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm install
+      - name: Build
+        working-directory: frontend
+        run: npm run build
+        env:
+          VITE_API_GATEWAY_URL: https://placeholder.example.com

@@ -1,0 +1,23 @@
+{
+  "name": "discord-service",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Discord Interactions endpoint: signature verification, command handling, dedup, mirroring.",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "register-commands": "node src/registerCommands.js",
+    "db:migrate": "node ../../packages/db/run-migration.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "pg": "^8.12.0",
+    "tweetnacl": "^1.0.3",
+    "dotenv": "^16.4.5",
+    "node-fetch": "^3.3.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

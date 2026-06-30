@@ -1,0 +1,82 @@
+/* ============================================================================
+   Design tokens — "Signal" console theme.
+   This is an ops dashboard for monitoring bot activity, so the visual
+   language borrows from a NOC console / terminal rather than a generic SaaS
+   admin template: dark surface, monospace for data, a single signal-green
+   accent that means "alive."
+   ============================================================================ */
+:root {
+  --bg: #0b0e11;
+  --panel: #12161b;
+  --panel-raised: #161b21;
+  --border: #22282f;
+  --border-soft: #1a1f25;
+
+  --text: #e8ebed;
+  --text-muted: #7c868e;
+  --text-dim: #4a5158;
+
+  --signal-green: #3ddc84;
+  --signal-amber: #f2b84b;
+  --signal-red: #ff5d5d;
+  --signal-blue: #5b9dff;
+
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+  --font-sans: 'Inter', -apple-system, system-ui, sans-serif;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+/* Visible keyboard focus everywhere — never suppress this. */
+:focus-visible {
+  outline: 2px solid var(--signal-blue);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 6px;
+}

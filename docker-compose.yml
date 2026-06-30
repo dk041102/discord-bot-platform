@@ -1,0 +1,56 @@
+name: discord-bot-platform
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: discord_bot
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./packages/db/migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api-gateway:
+    build: ./services/api-gateway
+    restart: unless-stopped
+    env_file: ./services/api-gateway/.env
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/discord_bot
+      FRONTEND_ORIGIN: http://localhost:5173
+    ports:
+      - '3000:3000'
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  discord-service:
+    build: ./services/discord-service
+    restart: unless-stopped
+    env_file: ./services/discord-service/.env
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/discord_bot
+      AI_SERVICE_URL: http://ai-service:3002
+    ports:
+      - '3001:3001'
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  ai-service:
+    build: ./services/ai-service
+    restart: unless-stopped
+    env_file: ./services/ai-service/.env
+    ports:
+      - '3002:3002'
+
+volumes:
+  pgdata:

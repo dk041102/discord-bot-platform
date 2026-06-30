@@ -1,0 +1,12 @@
+{
+  "name": "discord-bot-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Microservice Discord slash-command bot platform — interactions endpoint, dashboard API, AI triage, and frontend.",
+  "scripts": {
+    "install:all": "npm install --prefix services/api-gateway && npm install --prefix services/discord-service && npm install --prefix services/ai-service && npm install --prefix frontend",
+    "dev:up": "docker compose up --build",
+    "dev:down": "docker compose down",
+    "migrate": "node packages/db/run-migration.js"
+  }
+}

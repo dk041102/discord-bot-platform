@@ -1,0 +1,19 @@
+{
+  "name": "ai-service",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Thin wrapper around Groq's free LLM API for command triage/summarization.",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "dotenv": "^16.4.5",
+    "node-fetch": "^3.3.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

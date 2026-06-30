@@ -1,0 +1,77 @@
+# Render "Blueprint" — deploys all 3 backend services in one go.
+# In the Render dashboard: New > Blueprint > point at this repo > Render
+# reads this file and provisions everything below automatically.
+#
+# You still set the *secret* env vars (marked sync: false) yourself in each
+# service's dashboard after the blueprint creates it — they're deliberately
+# not in this file or in git, per the "must never expose secrets" rule.
+#
+# Free tier notes:
+# - Render's free web services spin down after 15 min idle, and the *first*
+#   request after that takes roughly 30-60 seconds to cold-start — well past
+#   Discord's ~3-second response window. A free uptime monitor (e.g.
+#   UptimeRobot, no card) pinging discord-service's /health every 10 minutes
+#   keeps it warm continuously; see README.md "Deploying" section for the
+#   full tradeoff and what happens if a cold first-request is hit anyway.
+# - Free tier has no separate "worker" service type without a paid plan, which
+#   is why the mirror_outbox worker runs in-process inside discord-service
+#   (see services/discord-service/src/lib/outboxWorker.js) rather than as
+#   its own Render service.
+
+services:
+  - type: web
+    name: discord-service
+    runtime: docker
+    dockerfilePath: ./services/discord-service/Dockerfile
+    dockerContext: ./services/discord-service
+    plan: free
+    envVars:
+      - key: DISCORD_PUBLIC_KEY
+        sync: false
+      - key: DISCORD_APPLICATION_ID
+        sync: false
+      - key: DISCORD_BOT_TOKEN
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: AI_SERVICE_URL
+        # `fromService` with property `host` gives the bare hostname (e.g.
+        # ai-service-xxxx.onrender.com), not a scheme-prefixed URL. Render
+        # services communicate over HTTPS internally, and aiClient.js builds
+        # `${AI_SERVICE_URL}/triage`, so this needs the scheme included.
+        # Render doesn't support string interpolation in render.yaml itself
+        # (see Blueprint docs), so if `fromService` produces a bare host,
+        # set this manually to https://<ai-service-public-url> in the
+        # dashboard after the first deploy instead of relying on this
+        # blueprint reference — left as `sync: false` for that reason.
+        sync: false
+      - key: PORT
+        value: 3001
+
+  - type: web
+    name: api-gateway
+    runtime: docker
+    dockerfilePath: ./services/api-gateway/Dockerfile
+    dockerContext: ./services/api-gateway
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: FRONTEND_ORIGIN
+        sync: false
+      - key: PORT
+        value: 3000
+
+  - type: web
+    name: ai-service
+    runtime: docker
+    dockerfilePath: ./services/ai-service/Dockerfile
+    dockerContext: ./services/ai-service
+    plan: free
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false
+      - key: PORT
+        value: 3002
