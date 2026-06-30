@@ -1,17 +1,6 @@
 import 'dotenv/config';
 import fetch from 'node-fetch';
 
-/**
- * One-time (or whenever-you-change-commands) setup script — registers the
- * slash commands with Discord so they show up in the server's command list.
- * This is separate from the running server because command registration is
- * an infrequent admin action, not something that should happen on every boot.
- *
- * Usage:
- *   DISCORD_BOT_TOKEN=... DISCORD_APPLICATION_ID=... node src/registerCommands.js
- * or just:
- *   npm run register-commands   (reads .env)
- */
 
 const commands = [
   {
@@ -44,7 +33,7 @@ async function main() {
   const url = `https://discord.com/api/v10/applications/${appId}/commands`;
 
   const res = await fetch(url, {
-    method: 'PUT', // PUT replaces the entire global command set — idempotent, safe to re-run.
+    method: 'PUT', 
     headers: {
       Authorization: `Bot ${token}`,
       'Content-Type': 'application/json',

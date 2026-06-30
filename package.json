@@ -8,5 +8,9 @@
     "dev:up": "docker compose up --build",
     "dev:down": "docker compose down",
     "migrate": "node packages/db/run-migration.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "pg": "^8.22.0"
   }
 }
